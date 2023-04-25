@@ -1,0 +1,2 @@
+# smysl
+Build django site
