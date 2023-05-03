@@ -3,8 +3,37 @@ from django.test import TestCase
 from blog.views import home_page
 from blog.models import Article
 from django.http import HttpRequest
+from datetime import datetime
 
 class HomePageTest(TestCase):
+
+    def test_home_page_displays_articles(self):
+        Article.objects.create(
+            title='title 1',
+            summary='summary 1',
+            full_text='full_text 1',
+            pubdate=datetime.now()
+        )
+        
+        Article.objects.create(
+            title='title 2',
+            summary='summary 2',
+            full_text='full_text 2',
+            pubdate=datetime.now()
+        )
+
+        request = HttpRequest()  
+        response = home_page(request)
+        html = response.content.decode('utf-8')
+
+        self.assertIn('title 1', html)
+        self.assertIn('summary 1', html)
+        self.assertNotIn('full_text 1', html)
+
+        self.assertIn('title 2', html)
+        self.assertIn('summary 2', html)
+        self.assertNotIn('full_text 2', html)
+
 
     def test_root_url_resolves_to_home_page_view(self):
         found = resolve('/')
@@ -28,7 +57,7 @@ class ArticleModelTest(TestCase):
             full_text='full_text',
             summary='summary 1',
             category='category 1',
-            pubdate='pubdate 1',
+            pubdate='datetime.now()',
         )
         article1.save()
         
@@ -37,7 +66,7 @@ class ArticleModelTest(TestCase):
             full_text='full_text',
             summary='summary 2',
             category='category 2',
-            pubdate='pubdate 2',
+            pubdate='datetime.now()',
         )
         
         article2.save()
